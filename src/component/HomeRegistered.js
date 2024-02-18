@@ -53,19 +53,32 @@ function HomeRegistered({ userId }) {
                 alert('You have already voted.');
                 return;
             }
-
-            // Add a new vote
+    
+            // Update the vote count for the selected candidate
+            const candidateRef = db.collection('candidates').doc(selectedCandidateId);
+            await db.runTransaction(async (transaction) => {
+                const candidateDoc = await transaction.get(candidateRef);
+                if (!candidateDoc.exists) {
+                    throw new Error('Candidate does not exist.');
+                }
+    
+                const newVoteCount = (candidateDoc.data().votes || 0) + 1;
+                transaction.update(candidateRef, { votes: newVoteCount });
+            });
+    
+            // Add a new vote 
             await voteRef.set({
                 voterId: currentUser.uid,
                 candidateId: selectedCandidateId,
             });
-
+    
             alert('Vote submitted successfully!');
         } catch (error) {
             console.error('Error submitting vote:', error);
             alert('Failed to submit vote. Please try again later.');
         }
     };
+    
 
     return (
         <div>
@@ -103,7 +116,7 @@ function HomeRegistered({ userId }) {
                         <Link to="/home" className="btn fw-bold fs-8 btn-primary">Home</Link>
                     </li>
                     </ul>
-                </div>
+                </div> 
             </div>
         </div>
         </div>

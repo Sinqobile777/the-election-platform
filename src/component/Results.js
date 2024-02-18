@@ -47,7 +47,7 @@ function Results() {
                         <li className="float-md-start px-4 pe-1 py-1">
                         <Link to="/home" className="btn fw-bold fs-8 btn-primary">Home</Link>
                     </li>
-                    </ul>
+                    </ul> 
                 </div>
             </div>
         </div>

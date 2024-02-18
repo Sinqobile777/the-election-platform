@@ -18,7 +18,7 @@ const UserAuthContext = ({ children }) => {
             if (user) {
                 setCurrentUser(user);
             } else {
-                setCurrentUser(null);
+                setCurrentUser(null); 
             }
         });
 

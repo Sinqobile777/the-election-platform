@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useAuth } from '../context/UserAuthContext';
 import { db } from '../firebase';
+import HomeRegistered from './HomeRegistered';
 
 function VotingComponent({ userId }) {
     const { currentUser } = useAuth();
-    const [selectedCandidateId, setSelectedCandidateId] = useState('');
 
-    const handleVote = async (candidateId) => {
+    const handleVote = async (selectedCandidateId) => {
         try {
             // Check if the user has already voted
             const voteRef = db.collection('votes').doc(currentUser.uid);
@@ -16,7 +16,19 @@ function VotingComponent({ userId }) {
                 return;
             }
 
-            // Add a new vote
+            // Update the vote count for the selected candidate
+            const candidateRef = db.collection('candidates').doc(selectedCandidateId);
+            await db.runTransaction(async (transaction) => {
+                const candidateDoc = await transaction.get(candidateRef);
+                if (!candidateDoc.exists) {
+                    throw new Error('Candidate does not exist.');
+                }
+
+                const newVoteCount = (candidateDoc.data().votes || 0) + 1;
+                transaction.update(candidateRef, { votes: newVoteCount });
+            });
+
+            // Add a new vote 
             await voteRef.set({
                 voterId: currentUser.uid,
                 candidateId: selectedCandidateId,
@@ -29,10 +41,7 @@ function VotingComponent({ userId }) {
         }
     };
 
-    return (
-        <HomeRegistered userId={userId} />
-    );
+    return <HomeRegistered userId={userId} handleVote={handleVote} />;
 }
 
 export default VotingComponent;
-

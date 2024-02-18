@@ -58,7 +58,8 @@ const logout = () => {
         error,
         currentuser,
         UserLogin,
-        logout
+        logout,
+        db
     };
 
     return (

@@ -56,8 +56,8 @@ function Home() {
 
             <div className="container-xl big-padding">
                 <div className="row section-title">
-                    <h2 className="fs-4">Organization - The Master Brand Company</h2>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit...</p>
+                    <h2 className="fs-4">President of the World Elections</h2>
+                    <p>This is the official site for the President of the World. This is very serious. Please vote wisely.</p>
                 </div>
                 <div className="row">
                 <div class="col-lg-4 col-md-6">
@@ -87,37 +87,16 @@ function Home() {
                         <button data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-primary fw-bolder fs-8">View Manifesto</button>
                     </div>
                 </div>
-                
-                 <div class="col-lg-4 col-md-6">
+            </div>
+            <div class="col-lg-4 col-md-6">
                     <div class="text-white text-center mb-4 votcard shadow-md bg-white p-4 pt-5">
                         <img className="rounded-pill shadow-md p-2" src="assets/images/testimonial/member-04.jpg" alt=""></img>
                         <h4 class="mt-3 fs-5 mb-1 fw-bold">Reena Anath</h4>
                         <h6 class="fs-7">Runnung to Be: <span class="text-primary fw-bold">President</span></h6>
                         <p class="text-dark mt-3 mb-3 fs-8">Aliquam utrum nibh rutrum nibh vitae tortor dapibus egestas. Cras condimentum dapibus tellus vel semper. Quisque vel dui molestie est auctor utrum nibh porttitor.</p>
-                        <button data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-primary fw-bolder fs-8">View Manifesto</button>
+                        <button data-bs-toggle="modal" data-bs-target="#exampleModal" className="btn btn-primary fw-bolder fs-8">View Manifesto</button>
                     </div>
                 </div>
-                
-                 <div class="col-lg-4 col-md-6">
-                    <div class="text-white text-center mb-4 votcard shadow-md bg-white p-4 pt-5">
-                        <img className="rounded-pill shadow-md p-2" src="assets/images/testimonial//member-05.png" alt=""/>
-                        <h4 class="mt-3 fs-5 mb-1 fw-bold">Allen Shory</h4>
-                        <h6 class="fs-7">Runnung to Be: <span class="text-primary fw-bold">President</span></h6>
-                        <p class="text-dark mt-3 mb-3 fs-8">Aliquam utrum nibh rutrum nibh vitae tortor dapibus egestas. Cras condimentum dapibus tellus vel semper. Quisque vel dui molestie est auctor utrum nibh porttitor.</p>
-                        <button data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-primary fw-bolder fs-8">View Manifesto</button>
-                    </div>
-                </div>
-                
-                 <div class="col-lg-4 col-md-6">
-                    <div class="text-white text-center mb-4 votcard shadow-md bg-white p-4 pt-5">
-                        <img className="rounded-pill shadow-md p-2" src="assets/images/testimonial/member-06.png" alt=""/>
-                        <h4 class="mt-3 fs-5 mb-1 fw-bold">Vimal kumar</h4>
-                        <h6 class="fs-7">Runnung to Be: <span class="text-primary fw-bold">President</span></h6>
-                        <p class="text-dark mt-3 mb-3 fs-8">Aliquam utrum nibh rutrum nibh vitae tortor dapibus egestas. Cras condimentum dapibus tellus vel semper. Quisque vel dui molestie est auctor utrum nibh porttitor.</p>
-                        <button data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-primary fw-bolder fs-8">View Manifesto</button>
-                    </div>
-                </div>
-            </div>
                 </div>
             </div>
 

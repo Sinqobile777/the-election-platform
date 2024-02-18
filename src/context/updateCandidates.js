@@ -1,6 +1,10 @@
+/* // updateCandidates.js
 import { db } from '../firebase';
 
 const updateCandidates = async (db) => {
+  console.log(db); // Check if the db object is correctly imported and initialized
+
+
     const candidatesRef = db.collection('candidates');
     const candidatesSnapshot = await candidatesRef.get();
   
@@ -14,4 +18,4 @@ const updateCandidates = async (db) => {
   };
   
   export default updateCandidates;
-  
+   */

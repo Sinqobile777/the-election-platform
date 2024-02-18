@@ -192,7 +192,7 @@ body {
   background-color: #eaeaea;
 }
 .page-nav ul {
-  float: none;
+  float: left;
   margin: auto;
 }
 @media screen and (max-width: 992px) {

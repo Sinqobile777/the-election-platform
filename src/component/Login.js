@@ -78,33 +78,33 @@ const Login = () => {
         </Helmet>
 
         <div className="whiteheader container-fluid bg-white">
-        <div id="menu-jk" className={`nav-col text-white shadow-md mb-3 ${isMenuOpen ? 'open' : ''}`}>
-    <div className="container">
-        <div className="row">
-            <div className="col-lg-6 pt-2 pb-2 align-items-center">
-                <img className="max-230 mt-2" src="assets/images/logo.png" alt=""/>
-                <a data-bs-toggle="collapse" data-bs-target="#menu" className="float-end text-dark d-lg-none pt-1 ps-3"><i className="bi pt-1 fs-1 cp bi-list"></i></a>
-            </div>
-            <div id="menu" className="col-lg-6 d-none d-lg-block">
-                <ul className="float-end mul d-inline-block">
-                    <li className="float-md-start px-4 pe-1 pt-4">
-                        <Link to="/results" className="fw-bold fs-8 text-primary"> View Result</Link>
-                    </li>
-                    <li className="float-md-start px-4 pe-1 py-3"> 
-                    <Link to="/login" className="btn fw-bold fs-8 btn-outline-primary px-5 text-primary">Login</Link>
-                    </li>
-                    <li className="float-md-start px-4 pe-1 py-3">
-                        <Link to="/register" className="btn fw-bold fs-8 btn-primary">Register as Voter</Link>
-                    </li>
-                    <li className="float-md-start px-4 pe-1 py-3">
+            <div id="menu-jk" className={`nav-col text-white shadow-md mb-3 ${isMenuOpen ? 'open' : ''}`}>
+        <div className="container">
+            <div className="row">
+                <div className="col-lg-7 pt-2 pb-2 align-items-center">
+                    <img className="max-230 mt-2" src="assets/images/logo.png" alt=""/>
+                    <a data-bs-toggle="collapse" data-bs-target="#menu" className="float-end text-dark d-lg-none pt-1 ps-3"><i className="bi pt-1 fs-1 cp bi-list"></i></a>
+                </div>
+                <div id="menu" className="col-lg-8 d-none d-lg-block">
+                    <ul className="float-right mul d-inline-block">
+                        <li className="float-md-start px-4 pe-1 pt-2">
+                            <Link to="/results" className="fw-bold fs-8 text-primary"> View Result</Link>
+                        </li>
+                        <li className="float-md-start px-4 pe-1 py-1"> 
+                        <Link to="/login" className="btn fw-bold fs-8 btn-outline-primary px-5 text-primary">Login</Link>
+                        </li>
+                        <li className="float-md-start px-4 pe-1 py-1">
+                            <Link to="/register" className="btn fw-bold fs-8 btn-primary">Register as Voter</Link>
+                        </li>
+                        <li className="float-md-start px-4 pe-1 py-1">
                         <Link to="/home" className="btn fw-bold fs-8 btn-primary">Home</Link>
                     </li>
-                </ul>
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
-    </div>
-    </div>
+        </div>
+        </div>
 
 
         <div>

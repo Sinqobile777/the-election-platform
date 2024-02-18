@@ -6,30 +6,38 @@ import { db } from '../firebase';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import { getDocs, orderBy, query, collection } from 'firebase/firestore';
 
 function HomeRegistered({ userId }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const navigate = useNavigate();
     const [selectedCandidateId, setSelectedCandidateId] = useState('');
-    const { currentUser, logout, db } = useAuth(); 
+    const { currentUser, logout } = useAuth();
     const [candidates, setCandidates] = useState([]);
-
-    
 
     useEffect(() => {
         const getCandidates = async () => {
             try {
-                const candidatesCollection = db.collection('candidates');
-                const snapshot = await candidatesCollection.get();
-                const candidatesList = snapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                }));
-                setCandidates(candidatesList);
+                const candidatesCollection = collection(db, 'candidates');
+                const q = query(candidatesCollection, orderBy('firstName'))
+
+                const snapshot = await getDocs(q);
+                const candidatesData = [];
+
+                snapshot.forEach((candidateDoc) => {
+                    const candidateData = candidateDoc.data();
+                    const candidateId = candidateDoc.id;
+                    candidatesData.push({ id: candidateId, ...candidateData })
+
+                });
+
+                setCandidates(candidatesData);
             } catch (error) {
                 console.error('Error fetching candidates:', error);
             }
-        };getCandidates();
+        };
+
+        getCandidates();
     }, []);
 
     const toggleMenu = () => {
@@ -58,7 +66,6 @@ function HomeRegistered({ userId }) {
             alert('Failed to submit vote. Please try again later.');
         }
     };
-    
 
     return (
         <div>
@@ -77,98 +84,51 @@ function HomeRegistered({ userId }) {
             <div id="menu-jk" className={`nav-col text-white shadow-md mb-3 ${isMenuOpen ? 'open' : ''}`}>
         <div className="container">
             <div className="row">
-                <div className="col-lg-6 pt-2 pb-2 align-items-center">
+                <div className="col-lg-7 pt-2 pb-2 align-items-center">
                     <img className="max-230 mt-2" src="assets/images/logo.png" alt=""/>
                     <a data-bs-toggle="collapse" data-bs-target="#menu" className="float-end text-dark d-lg-none pt-1 ps-3"><i className="bi pt-1 fs-1 cp bi-list"></i></a>
                 </div>
-                <div id="menu" className="col-lg-6 d-none d-lg-block">
-                    <ul className="float-end mul d-inline-block">
-                        <li className="float-md-start px-4 pe-1 pt-4">
+                <div id="menu" className="col-lg-8 d-none d-lg-block">
+                    <ul className="float-right mul d-inline-block">
+                        <li className="float-md-start px-4 pe-1 pt-2">
                             <Link to="/results" className="fw-bold fs-8 text-primary"> View Result</Link>
                         </li>
-                        <li className="float-md-start px-4 pe-1 py-3"> 
+                        <li className="float-md-start px-4 pe-1 py-1"> 
                         <Link to="/login" className="btn fw-bold fs-8 btn-outline-primary px-5 text-primary">Login</Link>
                         </li>
-                        <li className="float-md-start px-4 pe-1 py-3">
+                        <li className="float-md-start px-4 pe-1 py-1">
                             <Link to="/register" className="btn fw-bold fs-8 btn-primary">Register as Voter</Link>
                         </li>
-                        <button onClick={logout} style={{ color: "000", padding: "5px 10px", cursor: 'pointer'}}></button>
-
+                        <li className="float-md-start px-4 pe-1 py-1">
+                        <Link to="/home" className="btn fw-bold fs-8 btn-primary">Home</Link>
+                    </li>
                     </ul>
                 </div>
             </div>
         </div>
-            </div>
+        </div>
+        </div>
 
             <div className="container-xl big-padding">
                 <div className="row section-title">
-                <h2 className="fs-4">President of the World Elections</h2>
+                    <h2 className="fs-4">President of the World Elections</h2>
                     <p>This is the official site for the President of the World. This is very serious. Please vote wisely.</p>
                 </div>
                 <div className="row">
-                <div className="row">
-    {candidates.map(candidate => (
-        <div key={candidate.id} className="col-lg-4 col-md-6">
-            <div className="text-white text-center mb-4 votcard shadow-md bg-white p-4 pt-5">
-                <img className="rounded-pill shadow-md p-2" src={candidate.image} alt={candidate.name} />
-                <h4 className="mt-3 fs-5 mb-1 fw-bold">{candidate.name}</h4>
-                <h6 className="fs-7">Running to Be: <span className="text-primary fw-bold">{candidate.position}</span></h6>
-                <p className="text-dark mt-3 mb-3 fs-8">{candidate.bio}</p>
-                <button data-bs-toggle="modal" data-bs-target="#exampleModal" className="btn btn-primary fw-bolder fs-8">View Manifesto</button>
-                <button onClick={() => setSelectedCandidateId(candidate.id)} className="btn btn-danger fw-bolder px-4 ms-2 fs-8">Vote</button>
-            </div>
-        </div>
-    ))}
-</div>
-
-                <div className="row">
-    {candidates.map(candidate => (
-        <div key={candidate.id} className="col-lg-4 col-md-6">
-            <div className="text-white text-center mb-4 votcard shadow-md bg-white p-4 pt-5">
-                <img className="rounded-pill shadow-md p-2" src={candidate.image} alt={candidate.name} />
-                <h4 className="mt-3 fs-5 mb-1 fw-bold">{candidate.name}</h4>
-                <h6 className="fs-7">Running to Be: <span className="text-primary fw-bold">{candidate.position}</span></h6>
-                <p className="text-dark mt-3 mb-3 fs-8">{candidate.bio}</p>
-                <button data-bs-toggle="modal" data-bs-target="#exampleModal" className="btn btn-primary fw-bolder fs-8">View Manifesto</button>
-                <button onClick={() => setSelectedCandidateId(candidate.id)} className="btn btn-danger fw-bolder px-4 ms-2 fs-8">Vote</button>
-            </div>
-        </div>
-    ))}
-</div>
-
-                <div className="row">
-    {candidates.map(candidate => (
-        <div key={candidate.id} className="col-lg-4 col-md-6">
-            <div className="text-white text-center mb-4 votcard shadow-md bg-white p-4 pt-5">
-                <img className="rounded-pill shadow-md p-2" src={candidate.image} alt={candidate.name} />
-                <h4 className="mt-3 fs-5 mb-1 fw-bold">{candidate.name}</h4>
-                <h6 className="fs-7">Running to Be: <span className="text-primary fw-bold">{candidate.position}</span></h6>
-                <p className="text-dark mt-3 mb-3 fs-8">{candidate.bio}</p>
-                <button data-bs-toggle="modal" data-bs-target="#exampleModal" className="btn btn-primary fw-bolder fs-8">View Manifesto</button>
-                <button onClick={() => setSelectedCandidateId(candidate.id)} className="btn btn-danger fw-bolder px-4 ms-2 fs-8">Vote</button>
-            </div>
-        </div>
-    ))}
-</div>
-
-                
-                <div className="row">
-    {candidates.map(candidate => (
-        <div key={candidate.id} className="col-lg-4 col-md-6">
-            <div className="text-white text-center mb-4 votcard shadow-md bg-white p-4 pt-5">
-                <img className="rounded-pill shadow-md p-2" src={candidate.image} alt={candidate.name} />
-                <h4 className="mt-3 fs-5 mb-1 fw-bold">{candidate.name}</h4>
-                <h6 className="fs-7">Running to Be: <span className="text-primary fw-bold">{candidate.position}</span></h6>
-                <p className="text-dark mt-3 mb-3 fs-8">{candidate.bio}</p>
-                <button data-bs-toggle="modal" data-bs-target="#exampleModal" className="btn btn-primary fw-bolder fs-8">View Manifesto</button>
-                <button onClick={() => setSelectedCandidateId(candidate.id)} className="btn btn-danger fw-bolder px-4 ms-2 fs-8">Vote</button>
-            </div>
-        </div>
-    ))}
-</div>
-</div>
-
+                    {candidates.map(candidate => (
+                        <div key={candidate.id} className="col-lg-4 col-md-6">
+                            <div className="text-white text-center mb-4 votcard shadow-md bg-white p-4 pt-5">
+                                <img className="rounded-pill shadow-md p-2" src={candidate.image} alt={`${candidate.firstName} ${candidate.lastName}`} />
+                                <h4 className="mt-3 fs-5 mb-1 fw-bold">{`${candidate.firstName} ${candidate.lastName}`}</h4>
+                                <h6 className="fs-7">Running to Be: <span className="text-primary fw-bold">{candidate.position}</span></h6>
+                                <p className="text-dark mt-3 mb-3 fs-8">{candidate.bio}</p>
+                                <button data-bs-toggle="modal" data-bs-target="#exampleModal" className="btn btn-primary fw-bolder fs-8">View Manifesto</button>
+                                <button onClick={() => setSelectedCandidateId(candidate.id)} className="btn btn-danger fw-bolder px-4 ms-2 fs-8">Vote</button>
+                            </div>
+                        </div>
+                    ))}
                 </div>
+
             </div>
 
             <div className="copy">
@@ -194,7 +154,7 @@ function HomeRegistered({ userId }) {
                         </div>
                         <div className="modal-body">
                             <ul className="molist">
-                                {/* Modal content */}
+                            <p>{candidates.find(candidate => candidate.id === selectedCandidateId)?.bio}</p>
                             </ul>
                         </div>
                     </div>
@@ -202,6 +162,6 @@ function HomeRegistered({ userId }) {
             </div>
         </div>
     );
-    }
+}
 
 export default HomeRegistered;

@@ -45,3 +45,4 @@ function VotingComponent({ userId }) {
 }
 
 export default VotingComponent;
+

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthErrorCodes, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { auth, db } from "../firebase";
 import { doc, setDoc } from "firebase/firestore";
+import { isDisposableEmail } from "../utils/emailValidator";
 
 const userContext = createContext();
 export const useAuth = () => useContext(userContext);
@@ -35,6 +36,10 @@ const logout = () => {
 
     const Register = async (email, password, firstName, lastName, province) => {
         setError("");
+        if (isDisposableEmail(email)) {
+            setError("Please provide a valid email address.");
+            return;
+        }
         try {
             const result = await createUserWithEmailAndPassword(auth, email, password);
             const userRef = doc(db, "user", result.user.uid);

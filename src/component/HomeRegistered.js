@@ -45,6 +45,12 @@ function HomeRegistered({ userId }) {
     };
 
     const handleVote = async () => {
+
+        if (!selectedCandidateId) {
+            alert('Please select a candidate.');
+            return;
+        }
+        
         try {
             // Check if the user has already voted
             const voteRef = db.collection('votes').doc(currentUser.uid);

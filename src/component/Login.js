@@ -77,6 +77,8 @@ const Login = () => {
             <link rel="stylesheet" type="text/css" href="assets/css/style.css" />
         </Helmet>
 
+        <div style={{ display: 'flex', justifyContent: 'right', alignItems: 'right', minHeight: '1vh' }}>
+
         <div className="whiteheader container-fluid bg-white">
             <div id="menu-jk" className={`nav-col text-white shadow-md mb-3 ${isMenuOpen ? 'open' : ''}`}>
         <div className="container">
@@ -102,11 +104,12 @@ const Login = () => {
                     </ul>
                 </div>
             </div>
+            </div>
         </div>
         </div>
         </div>
 
-
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '85vh' }}>
         <div>
             <h1>Login</h1>
             {backError && <p>{backError}</p>}
@@ -128,6 +131,7 @@ const Login = () => {
 
             </form>
             {err && <p>{err}</p>}
+        </div>
         </div>
         </div>
     );

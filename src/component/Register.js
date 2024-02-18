@@ -114,6 +114,8 @@ const Register = () => {
     </div>
 
 
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '85vh' }}>
+
         <div>
             <h1>Register</h1>
             {backError && <p>{backError}</p>}
@@ -157,6 +159,7 @@ const Register = () => {
 
             </form>
             {err && <p>{err}</p>}
+        </div>
         </div>
         </div>
     );

@@ -6,11 +6,16 @@ import Login from './component/Login';
 import Register from './component/Register';
 import Results from './component/Results';
 import UserAuthContext from './context/UserAuthContext';
+import updateCandidates from './updateCandidates';
+import { db } from './firebase';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 function App() {
+
+  updateCandidates(db);
+
   return (
     <Router>
       <UserAuthContext>

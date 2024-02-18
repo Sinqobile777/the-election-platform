@@ -1,16 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/UserAuthContext';
+import { db } from '../firebase';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 function HomeRegistered({ userId }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const navigate = useNavigate(); // Move outside the logout function
+    const navigate = useNavigate();
     const [selectedCandidateId, setSelectedCandidateId] = useState('');
     const { currentUser, logout, db } = useAuth(); 
+    const [candidates, setCandidates] = useState([]);
+
+    
+
+    useEffect(() => {
+        const getCandidates = async () => {
+            try {
+                const candidatesCollection = db.collection('candidates');
+                const snapshot = await candidatesCollection.get();
+                const candidatesList = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+                setCandidates(candidatesList);
+            } catch (error) {
+                console.error('Error fetching candidates:', error);
+            }
+        };getCandidates();
+    }, []);
 
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
@@ -78,8 +98,6 @@ function HomeRegistered({ userId }) {
                 </div>
             </div>
         </div>
-
-
             </div>
 
             <div className="container-xl big-padding">
@@ -88,48 +106,68 @@ function HomeRegistered({ userId }) {
                     <p>This is the official site for the President of the World. This is very serious. Please vote wisely.</p>
                 </div>
                 <div className="row">
-                <div class="col-lg-4 col-md-6">
-                    <div class="text-white text-center mb-4 votcard shadow-md bg-white p-4 pt-5">
-                        <img className="rounded-pill shadow-md p-2" src="assets/images/testimonial/member-01.jpg" alt=""/>
-                        <h4 class="mt-3 fs-5 mb-1 fw-bold">James Anderson</h4>
-                        <h6 class="fs-7">Runnung to Be: <span class="text-primary fw-bold">President</span></h6>
-                        <p class="text-dark mt-3 mb-3 fs-8">Aliquam utrum nibh rutrum nibh vitae tortor dapibus egestas. Cras condimentum dapibus tellus vel semper. Quisque vel dui molestie est auctor utrum nibh porttitor.</p>
-                        <button data-bs-toggle="modal" data-bs-target="#exampleModal" className="btn btn-primary fw-bolder fs-8">View Manifesto</button>
-                            <button className="btn btn-danger fw-bolder px-4 ms-2 fs-8">Vote</button>
-                    </div>
-                </div>
-                 <div class="col-lg-4 col-md-6">
-                    <div class="text-white text-center mb-4 votcard shadow-md bg-white p-4 pt-5">
-                        <img className="rounded-pill shadow-md p-2" src="assets/images/testimonial/member-02.jpg" alt=""/>
-                        <h4 class="mt-3 fs-5 mb-1 fw-bold">Arun Kumar</h4>
-                        <h6 class="fs-7">Runnung to Be: <span class="text-primary fw-bold">President</span></h6>
-                        <p class="text-dark mt-3 mb-3 fs-8">Aliquam utrum nibh rutrum nibh vitae tortor dapibus egestas. Cras condimentum dapibus tellus vel semper. Quisque vel dui molestie est auctor utrum nibh porttitor.</p>
-                        <button data-bs-toggle="modal" data-bs-target="#exampleModal" className="btn btn-primary fw-bolder fs-8">View Manifesto</button>
-                            <button className="btn btn-danger fw-bolder px-4 ms-2 fs-8">Vote</button>
-                    </div>
-                </div>
-                 <div class="col-lg-4 col-md-6">
-                    <div class="text-white text-center mb-4 votcard shadow-md bg-white p-4 pt-5">
-                        <img className="rounded-pill shadow-md p-2" src="assets/images/testimonial/member-03.jpg" alt=""/>
-                        <h4 class="mt-3 fs-5 mb-1 fw-bold">Pream Nath</h4>
-                        <h6 class="fs-7">Runnung to Be: <span class="text-primary fw-bold">President</span></h6>
-                        <p class="text-dark mt-3 mb-3 fs-8">Aliquam utrum nibh rutrum nibh vitae tortor dapibus egestas. Cras condimentum dapibus tellus vel semper. Quisque vel dui molestie est auctor utrum nibh porttitor.</p>
-                        <button data-bs-toggle="modal" data-bs-target="#exampleModal" className="btn btn-primary fw-bolder fs-8">View Manifesto</button>
-                        <button className="btn btn-danger fw-bolder px-4 ms-2 fs-8">Vote</button>
-                    </div>
-                </div>
+                <div className="row">
+    {candidates.map(candidate => (
+        <div key={candidate.id} className="col-lg-4 col-md-6">
+            <div className="text-white text-center mb-4 votcard shadow-md bg-white p-4 pt-5">
+                <img className="rounded-pill shadow-md p-2" src={candidate.image} alt={candidate.name} />
+                <h4 className="mt-3 fs-5 mb-1 fw-bold">{candidate.name}</h4>
+                <h6 className="fs-7">Running to Be: <span className="text-primary fw-bold">{candidate.position}</span></h6>
+                <p className="text-dark mt-3 mb-3 fs-8">{candidate.bio}</p>
+                <button data-bs-toggle="modal" data-bs-target="#exampleModal" className="btn btn-primary fw-bolder fs-8">View Manifesto</button>
+                <button onClick={() => setSelectedCandidateId(candidate.id)} className="btn btn-danger fw-bolder px-4 ms-2 fs-8">Vote</button>
+            </div>
+        </div>
+    ))}
+</div>
+
+                <div className="row">
+    {candidates.map(candidate => (
+        <div key={candidate.id} className="col-lg-4 col-md-6">
+            <div className="text-white text-center mb-4 votcard shadow-md bg-white p-4 pt-5">
+                <img className="rounded-pill shadow-md p-2" src={candidate.image} alt={candidate.name} />
+                <h4 className="mt-3 fs-5 mb-1 fw-bold">{candidate.name}</h4>
+                <h6 className="fs-7">Running to Be: <span className="text-primary fw-bold">{candidate.position}</span></h6>
+                <p className="text-dark mt-3 mb-3 fs-8">{candidate.bio}</p>
+                <button data-bs-toggle="modal" data-bs-target="#exampleModal" className="btn btn-primary fw-bolder fs-8">View Manifesto</button>
+                <button onClick={() => setSelectedCandidateId(candidate.id)} className="btn btn-danger fw-bolder px-4 ms-2 fs-8">Vote</button>
+            </div>
+        </div>
+    ))}
+</div>
+
+                <div className="row">
+    {candidates.map(candidate => (
+        <div key={candidate.id} className="col-lg-4 col-md-6">
+            <div className="text-white text-center mb-4 votcard shadow-md bg-white p-4 pt-5">
+                <img className="rounded-pill shadow-md p-2" src={candidate.image} alt={candidate.name} />
+                <h4 className="mt-3 fs-5 mb-1 fw-bold">{candidate.name}</h4>
+                <h6 className="fs-7">Running to Be: <span className="text-primary fw-bold">{candidate.position}</span></h6>
+                <p className="text-dark mt-3 mb-3 fs-8">{candidate.bio}</p>
+                <button data-bs-toggle="modal" data-bs-target="#exampleModal" className="btn btn-primary fw-bolder fs-8">View Manifesto</button>
+                <button onClick={() => setSelectedCandidateId(candidate.id)} className="btn btn-danger fw-bolder px-4 ms-2 fs-8">Vote</button>
+            </div>
+        </div>
+    ))}
+</div>
+
                 
-                 <div class="col-lg-4 col-md-6">
-                    <div class="text-white text-center mb-4 votcard shadow-md bg-white p-4 pt-5">
-                        <img className="rounded-pill shadow-md p-2" src="assets/images/testimonial/member-04.jpg" alt=""></img>
-                        <h4 class="mt-3 fs-5 mb-1 fw-bold">Reena Anath</h4>
-                        <h6 class="fs-7">Runnung to Be: <span class="text-primary fw-bold">President</span></h6>
-                        <p class="text-dark mt-3 mb-3 fs-8">Aliquam utrum nibh rutrum nibh vitae tortor dapibus egestas. Cras condimentum dapibus tellus vel semper. Quisque vel dui molestie est auctor utrum nibh porttitor.</p>
-                        <button data-bs-toggle="modal" data-bs-target="#exampleModal" className="btn btn-primary fw-bolder fs-8">View Manifesto</button>
-                            <button  className="btn btn-danger fw-bolder px-4 ms-2 fs-8">Vote</button>
-                    </div>
-                </div>
-                            </div>
+                <div className="row">
+    {candidates.map(candidate => (
+        <div key={candidate.id} className="col-lg-4 col-md-6">
+            <div className="text-white text-center mb-4 votcard shadow-md bg-white p-4 pt-5">
+                <img className="rounded-pill shadow-md p-2" src={candidate.image} alt={candidate.name} />
+                <h4 className="mt-3 fs-5 mb-1 fw-bold">{candidate.name}</h4>
+                <h6 className="fs-7">Running to Be: <span className="text-primary fw-bold">{candidate.position}</span></h6>
+                <p className="text-dark mt-3 mb-3 fs-8">{candidate.bio}</p>
+                <button data-bs-toggle="modal" data-bs-target="#exampleModal" className="btn btn-primary fw-bolder fs-8">View Manifesto</button>
+                <button onClick={() => setSelectedCandidateId(candidate.id)} className="btn btn-danger fw-bolder px-4 ms-2 fs-8">Vote</button>
+            </div>
+        </div>
+    ))}
+</div>
+</div>
+
                 </div>
             </div>
 

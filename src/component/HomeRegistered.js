@@ -37,10 +37,7 @@ function HomeRegistered({ userId }) {
 
     const handleVote = async () => {
         try {
-            if (!selectedCandidate) {
-                alert('Please select a candidate.');
-                return;
-            }
+            
 
             const userRef = doc(db, 'user', currentUser.uid);
             const userDoc = await getDoc(userRef);
@@ -64,8 +61,8 @@ function HomeRegistered({ userId }) {
     };
 
     useEffect(() => {
-        getCandidates();
-    }, []); // Empty dependency array to run the effect only once
+            getCandidates();
+    }, []); 
 
     const getCandidates = async () => {
         try {

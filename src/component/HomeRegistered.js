@@ -4,87 +4,88 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/UserAuthContext';
 import { db } from '../firebase';
 
+import { doc, getDocs, getDoc, increment, updateDoc } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import { getDocs, orderBy, query, collection } from 'firebase/firestore';
+import { orderBy, query, collection } from 'firebase/firestore';
 
 function HomeRegistered({ userId }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const navigate = useNavigate();
-    const [selectedCandidateId, setSelectedCandidateId] = useState('');
-    const { currentUser, logout } = useAuth();
     const [candidates, setCandidates] = useState([]);
 
-    useEffect(() => {
-        const getCandidates = async () => {
-            try {
-                const candidatesCollection = collection(db, 'candidates');
-                const q = query(candidatesCollection, orderBy('firstName'))
-
-                const snapshot = await getDocs(q);
-                const candidatesData = [];
-
-                snapshot.forEach((candidateDoc) => {
-                    const candidateData = candidateDoc.data();
-                    const candidateId = candidateDoc.id;
-                    candidatesData.push({ id: candidateId, ...candidateData })
-
-                });
-
-                setCandidates(candidatesData);
-            } catch (error) {
-                console.error('Error fetching candidates:', error);
-            }
-        };
-
-        getCandidates();
-    }, []);
+    const [selectedCandidate, setSelectedCandidate] = useState(null);
+    const [currentUser, setCurrentUser] = useState(null);
 
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
     };
 
-    const handleVote = async () => {
+    useEffect(() => {
+        const auth = getAuth();
+        setCurrentUser(auth.currentUser);
 
-        if (!selectedCandidateId) {
-            alert('Please select a candidate.');
-            return;
-        }
-        
+        const unsubscribe = auth.onAuthStateChanged(user => {
+            setCurrentUser(user);
+        });
+
+        return () => unsubscribe();
+
+    }, []);
+
+    const handleVote = async () => {
         try {
-            // Check if the user has already voted
-            const voteRef = db.collection('votes').doc(currentUser.uid);
-            const voteDoc = await voteRef.get();
-            if (voteDoc.exists) {
-                alert('You have already voted.');
+            if (!selectedCandidate) {
+                alert('Please select a candidate.');
                 return;
             }
-    
-            // Update the vote count for the selected candidate
-            const candidateRef = db.collection('candidates').doc(selectedCandidateId);
-            await db.runTransaction(async (transaction) => {
-                const candidateDoc = await transaction.get(candidateRef);
-                if (!candidateDoc.exists) {
-                    throw new Error('Candidate does not exist.');
-                }
-    
-                const newVoteCount = (candidateDoc.data().votes || 0) + 1;
-                transaction.update(candidateRef, { votes: newVoteCount });
-            });
-    
-            // Add a new vote 
-            await voteRef.set({
-                voterId: currentUser.uid,
-                candidateId: selectedCandidateId,
-            });
-    
-            alert('Vote submitted successfully!');
+
+            const userRef = doc(db, 'user', currentUser.uid);
+            const userDoc = await getDoc(userRef);
+            const alreadyVoted = userDoc.data().isVoted;
+
+            if (alreadyVoted) {
+                alert('You already voted');
+                return;
+            }
+
+            const candidateRef = doc(db, 'candidates', selectedCandidate);
+            await updateDoc(candidateRef, { count: increment(1) });
+            await updateDoc(userRef, { isVoted: true });
+
+            getCandidates();
+
+            alert('You have successfully voted!!');
         } catch (error) {
-            console.error('Error submitting vote:', error);
-            alert('Failed to submit vote. Please try again later.');
+            console.error('Error in voting:', error);
         }
     };
-    
+
+    useEffect(() => {
+        getCandidates();
+    }, []); // Empty dependency array to run the effect only once
+
+    const getCandidates = async () => {
+        try {
+            const candidatesCollection = collection(db, 'candidates');
+            const q = query(candidatesCollection, orderBy('firstName'))
+
+            const snapshot = await getDocs(q);
+            const candidatesData = [];
+
+            snapshot.forEach((candidateDoc) => {
+                const candidateData = candidateDoc.data();
+                const candidateId = candidateDoc.id;
+                candidatesData.push({ id: candidateId, ...candidateData })
+            });
+
+            setCandidates(candidatesData);
+        } catch (error) {
+            console.error('Error fetching candidates:', error);
+        }
+    };
 
     return (
         <div>
@@ -100,33 +101,33 @@ function HomeRegistered({ userId }) {
             </Helmet>
 
             <div className="whiteheader container-fluid bg-white">
-            <div id="menu-jk" className={`nav-col text-white shadow-md mb-3 ${isMenuOpen ? 'open' : ''}`}>
-        <div className="container">
-            <div className="row">
-                <div className="col-lg-7 pt-2 pb-2 align-items-center">
-                    <img className="max-230 mt-2" src="assets/images/logo.png" alt=""/>
-                    <a data-bs-toggle="collapse" data-bs-target="#menu" className="float-end text-dark d-lg-none pt-1 ps-3"><i className="bi pt-1 fs-1 cp bi-list"></i></a>
+                <div id="menu-jk" className={`nav-col text-white shadow-md mb-3 ${isMenuOpen ? 'open' : ''}`}>
+                    <div className="container">
+                        <div className="row">
+                            <div className="col-lg-7 pt-2 pb-2 align-items-center">
+                                <img className="max-230 mt-2" src="assets/images/logo.png" alt="" />
+                                <a data-bs-toggle="collapse" data-bs-target="#menu" className="float-end text-dark d-lg-none pt-1 ps-3"><i className="bi pt-1 fs-1 cp bi-list"></i></a>
+                            </div>
+                            <div id="menu" className="col-lg-8 d-none d-lg-block">
+                                <ul className="float-right mul d-inline-block">
+                                    <li className="float-md-start px-4 pe-1 pt-2">
+                                        <Link to="/results" className="fw-bold fs-8 text-primary"> View Result</Link>
+                                    </li>
+                                    <li className="float-md-start px-4 pe-1 py-1">
+                                        <Link to="/login" className="btn fw-bold fs-8 btn-outline-primary px-5 text-primary">Login</Link>
+                                    </li>
+                                    <li className="float-md-start px-4 pe-1 py-1">
+                                        <Link to="/register" className="btn fw-bold fs-8 btn-primary">Register as Voter</Link>
+                                    </li>
+                                    <li className="float-md-start px-4 pe-1 py-1">
+                                        <Link to="/home" className="btn fw-bold fs-8 btn-primary">Home</Link>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div id="menu" className="col-lg-8 d-none d-lg-block">
-                    <ul className="float-right mul d-inline-block">
-                        <li className="float-md-start px-4 pe-1 pt-2">
-                            <Link to="/results" className="fw-bold fs-8 text-primary"> View Result</Link>
-                        </li>
-                        <li className="float-md-start px-4 pe-1 py-1"> 
-                        <Link to="/login" className="btn fw-bold fs-8 btn-outline-primary px-5 text-primary">Login</Link>
-                        </li>
-                        <li className="float-md-start px-4 pe-1 py-1">
-                            <Link to="/register" className="btn fw-bold fs-8 btn-primary">Register as Voter</Link>
-                        </li>
-                        <li className="float-md-start px-4 pe-1 py-1">
-                        <Link to="/home" className="btn fw-bold fs-8 btn-primary">Home</Link>
-                    </li>
-                    </ul>
-                </div> 
             </div>
-        </div>
-        </div>
-        </div>
 
             <div className="container-xl big-padding">
                 <div className="row section-title">
@@ -142,12 +143,11 @@ function HomeRegistered({ userId }) {
                                 <h6 className="fs-7">Running to Be: <span className="text-primary fw-bold">{candidate.position}</span></h6>
                                 <p className="text-dark mt-3 mb-3 fs-8">{candidate.bio}</p>
                                 <button data-bs-toggle="modal" data-bs-target="#exampleModal" className="btn btn-primary fw-bolder fs-8">View Manifesto</button>
-                                <button onClick={() => setSelectedCandidateId(candidate.id)} className="btn btn-danger fw-bolder px-4 ms-2 fs-8">Vote</button>
+                                <button onClick={() => { setSelectedCandidate(candidate.id); handleVote(); }} className="btn btn-danger fw-bolder px-4 ms-2 fs-8">Vote</button>
                             </div>
                         </div>
                     ))}
                 </div>
-
             </div>
 
             <div className="copy">
@@ -163,7 +163,6 @@ function HomeRegistered({ userId }) {
                 </div>
             </div>
 
-            {/* Modal */}
             <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">
@@ -173,7 +172,7 @@ function HomeRegistered({ userId }) {
                         </div>
                         <div className="modal-body">
                             <ul className="molist">
-                            <p>{candidates.find(candidate => candidate.id === selectedCandidateId)?.bio}</p>
+                                <p>{candidates.find(candidate => candidate.id === selectedCandidate)?.bio}</p>
                             </ul>
                         </div>
                     </div>

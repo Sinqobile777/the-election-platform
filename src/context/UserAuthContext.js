@@ -45,7 +45,7 @@ const logout = () => {
             const userRef = doc(db, "user", result.user.uid);
             await setDoc(userRef, { firstName, lastName, email, province });
             alert("Welcome! New user created successfully.");
-            navigate('./HomeRegistered');
+            navigate('./Login');
         } catch (err) {
             if (err.code === "auth/email-already-in-use") {
                 setError("Email already in use. Try another email");

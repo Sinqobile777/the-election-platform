@@ -67,6 +67,7 @@ const Register = () => {
             return setError("Password must be greater than 6 Characters in length")
         } else {
                  Register(email, password, firstName, lastName, province);
+                 
         } 
     };
 
